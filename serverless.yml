@@ -76,4 +76,15 @@ functions:
       - http:
           path: '/environment/{id}'
           method: put
-          private: true                           
+          private: true
+
+  deleteEnvironment:
+    handler: functions/api/deleteEnvironment.handler
+    package:
+      patterns:
+        - '**/deleteEnvironment.js'
+    events:
+      - http:
+          path: '/environment/{id}'
+          method: delete
+          private: true
