@@ -4,7 +4,6 @@ frameworkVersion: '3'
 provider:
   name: aws
   runtime: nodejs14.x
-  lambdaHashingVersion: 20201221
   timeout: 10
   region: ${param:region}
   memorySize: ${param:memorySize}
@@ -28,15 +27,31 @@ params:
     stageName: "development"
 
 package:
+  individually: true
   patterns:
     - '!node_modules/**'
-    - '*.yml'
+    - '!*.yml'
+    - '!*'
 
 functions:
   getEnvironmentList:
     handler: functions/api/getEnvironmentList.handler
+    package:
+      patterns:
+        - '**/getEnvironmentList.js'
     events:
       - http:
           path: environment-list
           method: get
           private: true
+
+  getEnvironment:
+    handler: functions/api/getEnvironment.handler
+    package:
+      patterns:
+        - '**/getEnvironment.js'
+    events:
+      - http:
+          path: environment
+          method: get
+          private: true        
