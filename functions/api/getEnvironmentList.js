@@ -1,34 +1,19 @@
+const AWS = require('aws-sdk');
+const docClient = new AWS.DynamoDB.DocumentClient();
+const { ENVIRONMENT_TABLE } = process.env;
+
 module.exports.handler = async (event) => {
   console.log('event', event);
 
-  const environments =  [
-    {
-      "hospitalName": "as.com",
-      "envName": "as.com"
-    },
-    {
-      "hospitalName": "Halcyon",
-      "envName": "AG"
-    },
-    {
-      "hospitalName": "Einstein Medical Center",
-      "envName": "Einstein Medical Center"
-    },
-    {
-      "hospitalName": "Sarah Test",
-      "envName": "Sarah Demo"
-    },
-    {
-      "hospitalName": "Uvalde Memorial Hospital",
-      "envName": "Uvalde Memorial Hospital"
-    },
-    {
-      "hospitalName": "AppGambit",
-      "envName": "AppGambit"
-    }
-  ]
+  const scanParams = {
+    TableName: ENVIRONMENT_TABLE,
+  };
+  console.log('scanParams', scanParams);
+  const putItemResponse = await docClient.scan(scanParams).promise();
+  console.log('putItemResponse', putItemResponse);
+  const records = putItemResponse && putItemResponse.Items || [];
   const responseBody = {
-    data: environments
+    data: records
   }
   console.log('responseBody', responseBody);
   const response = {
