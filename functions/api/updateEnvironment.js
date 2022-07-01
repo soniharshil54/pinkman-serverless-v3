@@ -1,8 +1,8 @@
 module.exports.handler = async (event) => {
   console.log('event', event);
-  const params = event.pathParameters;
+  const params = { ...JSON.parse(event.body), ...event.pathParameters }
   const { id } = params;
-  console.log('params id', id)
+  console.log('params', params);
 
   const environments =  [
     {
@@ -19,9 +19,19 @@ module.exports.handler = async (event) => {
     },
   ]
 
-  const environment = environments.find((env) => env.id === id)
+  const updatedEnvironments = environments.map((env) => {
+    if(env.id === id) {
+      return {
+        ...env,
+        ...params
+      }
+    } else {
+      return env
+    }
+  })
+
   const responseBody = {
-    data: environment
+    data: updatedEnvironments
   }
   console.log('responseBody', responseBody);
   const response = {

@@ -52,7 +52,7 @@ functions:
         - '**/getEnvironment.js'
     events:
       - http:
-          path: environment
+          path: '/environment/{id}'
           method: get
           private: true
 
@@ -65,4 +65,15 @@ functions:
       - http:
           path: environment
           method: post
-          private: true                
+          private: true
+
+  updateEnvironment:
+    handler: functions/api/updateEnvironment.handler
+    package:
+      patterns:
+        - '**/updateEnvironment.js'
+    events:
+      - http:
+          path: '/environment/{id}'
+          method: put
+          private: true                           
