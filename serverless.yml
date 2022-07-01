@@ -10,8 +10,20 @@ provider:
   apiGateway:
     apiKeys:
       - pinkman-${param:stageName}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:UpdateItem
+            - dynamodb:PutItem
+            - dynamodb:DeleteItem
+          Resource:
+            - !GetAtt EnvironmentTable.Arn
   environment:
     STAGE_NAME: ${param:stageName}
+    ENVIRONMENT_TABLE: !Ref EnvironmentTable
 
 # Stage parameters
 params:
@@ -88,3 +100,16 @@ functions:
           path: '/environment/{id}'
           method: delete
           private: true
+
+resources:
+  Resources:
+    EnvironmentTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH

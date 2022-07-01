@@ -1,25 +1,24 @@
+const AWS = require('aws-sdk');
+const docClient = new AWS.DynamoDB.DocumentClient();
+const { ENVIRONMENT_TABLE } = process.env;
+
 module.exports.handler = async (event) => {
   console.log('event', event);
   const params = JSON.parse(event.body)
   console.log('params', params);
 
-  const environments =  [
-    {
-      "hospitalName": "AG",
-      "envName": "AG ENV",
-      "description": "AG DESC",
-    },
-    {
-      "hospitalName": "Einstein Medical Center",
-      "envName": "Einstein Medical Center ENV",
-      "description": "Einstein Medical Center DESC",
-    },
-  ]
+  const putItemParams = {
+    Item: params,
+    TableName: ENVIRONMENT_TABLE,
+    ReturnValues: 'ALL_OLD'
+  };
+  console.log('putItemParams', putItemParams);
+  const putItemResponse = await docClient.put(putItemParams).promise();
 
-  environments.push(params);
+  console.log('putItemResponse', putItemResponse);
 
   const responseBody = {
-    data: environments
+    data: putItemResponse
   }
   console.log('responseBody', responseBody);
   const response = {
