@@ -54,4 +54,15 @@ functions:
       - http:
           path: environment
           method: get
-          private: true        
+          private: true
+
+  createEnvironment:
+    handler: functions/api/createEnvironment.handler
+    package:
+      patterns:
+        - '**/createEnvironment.js'
+    events:
+      - http:
+          path: environment
+          method: post
+          private: true                
