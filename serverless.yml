@@ -184,3 +184,62 @@ resources:
         WebsiteConfiguration: 
           IndexDocument: index.html
           ErrorDocument: index.html
+
+    OriginAccessBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref OriginS3Bucket
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Principal: 
+                CanonicalUser: !GetAtt CloudFrontOriginAccessIdentity.S3CanonicalUserId
+              Effect: Allow
+              Action:
+                - 's3:GetObject'
+              Resource: 
+                - !GetAtt OriginS3Bucket.Arn
+                - !Join [ "", [ !GetAtt OriginS3Bucket.Arn, "/*" ] ]
+
+    CloudFrontOriginAccessIdentity:
+      Type: "AWS::CloudFront::CloudFrontOriginAccessIdentity"
+      Properties:
+        CloudFrontOriginAccessIdentityConfig:
+          Comment: !Ref OriginS3Bucket
+
+    CloudFrontDistro:
+      Type: "AWS::CloudFront::Distribution"
+      Properties:
+        DistributionConfig:
+          CustomErrorResponses:
+            - ErrorCode: 403 # not found
+              ResponseCode: 404
+              ResponsePagePath: "/index.html"
+          DefaultCacheBehavior:
+            AllowedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+            CachedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+            Compress: true
+            DefaultTTL: 3600 # in seconds
+            ForwardedValues:
+              Cookies:
+                Forward: none
+              QueryString: false
+            MaxTTL: 86400 # in seconds
+            MinTTL: 60 # in seconds
+            TargetOriginId: s3origin
+            ViewerProtocolPolicy: "redirect-to-https"
+          DefaultRootObject: "index.html"
+          Enabled: true
+          HttpVersion: http2
+          Origins:
+            - DomainName: !GetAtt "OriginS3Bucket.DomainName"
+              Id: s3origin
+              S3OriginConfig:
+                OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}"
+          PriceClass: "PriceClass_All"
