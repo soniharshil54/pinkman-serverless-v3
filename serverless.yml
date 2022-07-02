@@ -157,4 +157,30 @@ resources:
           - ALLOW_REFRESH_TOKEN_AUTH
         PreventUserExistenceErrors: LEGACY
         SupportedIdentityProviders:
-          - COGNITO       
+          - COGNITO
+
+    OriginS3Bucket:
+      Type: AWS::S3::Bucket
+      Properties: 
+        AccessControl: PublicRead
+        BucketName: pinkman-web-${param:stageName}
+        CorsConfiguration: 
+          CorsRules:
+            - AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+              AllowedOrigins:
+                - '*'
+              ExposedHeaders:
+                - Date
+              Id: public-read-cors-policy-1
+              MaxAge: 3600
+        PublicAccessBlockConfiguration: 
+          BlockPublicAcls: false
+          BlockPublicPolicy: false
+          IgnorePublicAcls: false
+          RestrictPublicBuckets: false
+        WebsiteConfiguration: 
+          IndexDocument: index.html
+          ErrorDocument: index.html
