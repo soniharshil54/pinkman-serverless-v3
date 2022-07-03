@@ -68,6 +68,8 @@ functions:
           method: get
           authorizer:
             type: COGNITO_USER_POOLS
+            scopes: # Optional
+              - aws.cognito.signin.user.admin
             authorizerId:
               Ref: ApiGatewayAuthorizer
 
@@ -82,6 +84,8 @@ functions:
           method: get
           authorizer:
             type: COGNITO_USER_POOLS
+            scopes: # Optional
+              - aws.cognito.signin.user.admin
             authorizerId:
               Ref: ApiGatewayAuthorizer
 
@@ -96,6 +100,8 @@ functions:
           method: post
           authorizer:
             type: COGNITO_USER_POOLS
+            scopes: # Optional
+              - aws.cognito.signin.user.admin
             authorizerId:
               Ref: ApiGatewayAuthorizer
 
@@ -110,6 +116,8 @@ functions:
           method: put
           authorizer:
             type: COGNITO_USER_POOLS
+            scopes: # Optional
+              - aws.cognito.signin.user.admin
             authorizerId:
               Ref: ApiGatewayAuthorizer
 
@@ -124,6 +132,8 @@ functions:
           method: delete
           authorizer:
             type: COGNITO_USER_POOLS
+            scopes: # Optional
+              - aws.cognito.signin.user.admin
             authorizerId:
               Ref: ApiGatewayAuthorizer
 
@@ -138,6 +148,8 @@ functions:
           method: get
           authorizer:
             type: COGNITO_USER_POOLS
+            scopes: # Optional
+              - aws.cognito.signin.user.admin
             authorizerId:
               Ref: ApiGatewayAuthorizer
 
@@ -152,6 +164,8 @@ functions:
           method: get
           authorizer:
             type: COGNITO_USER_POOLS
+            scopes: # Optional
+              - aws.cognito.signin.user.admin
             authorizerId:
               Ref: ApiGatewayAuthorizer
 
@@ -166,6 +180,8 @@ functions:
           method: post
           authorizer:
             type: COGNITO_USER_POOLS
+            scopes: # Optional
+              - aws.cognito.signin.user.admin
             authorizerId:
               Ref: ApiGatewayAuthorizer
 
@@ -180,6 +196,8 @@ functions:
           method: put
           authorizer:
             type: COGNITO_USER_POOLS
+            scopes: # Optional
+              - aws.cognito.signin.user.admin
             authorizerId:
               Ref: ApiGatewayAuthorizer
 
@@ -194,6 +212,8 @@ functions:
           method: delete
           authorizer:
             type: COGNITO_USER_POOLS
+            scopes: # Optional
+              - aws.cognito.signin.user.admin
             authorizerId:
               Ref: ApiGatewayAuthorizer            
 
