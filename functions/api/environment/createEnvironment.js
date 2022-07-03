@@ -2,7 +2,7 @@ const AWS = require('aws-sdk');
 const docClient = new AWS.DynamoDB.DocumentClient();
 const { ENVIRONMENT_TABLE } = process.env;
 
-const UtilService = require('../../services/util');
+const UtilService = require('../../../services/util');
 
 module.exports.handler = async (event) => {
   console.log('event', event);

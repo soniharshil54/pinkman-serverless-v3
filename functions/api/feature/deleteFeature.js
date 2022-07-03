@@ -1,13 +1,14 @@
-const CommonService = require('../../services/common');
-const { ENVIRONMENT_TABLE } = process.env;
+const AWS = require('aws-sdk');
+const docClient = new AWS.DynamoDB.DocumentClient();
+const { FEATURE_TABLE } = process.env;
 
 module.exports.handler = async (event) => {
   console.log('event', event);
-  const params = { ...JSON.parse(event.body), ...event.pathParameters }
+  const params = event.pathParameters;
   const { id } = params;
   console.log('params', params);
 
-  // const environments =  [
+  // const features =  [
   //   {
   //     "id": "1",
   //     "hospitalName": "AG",
@@ -22,24 +23,21 @@ module.exports.handler = async (event) => {
   //   },
   // ]
 
-  // const updatedEnvironments = environments.map((env) => {
-  //   if(env.id === id) {
-  //     return {
-  //       ...env,
-  //       ...params
-  //     }
-  //   } else {
-  //     return env
-  //   }
-  // })
+  // const updatedFeatures = features.filter((env) => env.id !== id)
 
-  delete params.id;
-  const updateItemResponse = await CommonService.updateItemByKey(ENVIRONMENT_TABLE, { id }, params);
-  console.log('updateItemResponse', updateItemResponse);
-
+  const deleteParams = {
+    TableName: FEATURE_TABLE,
+    Key: {
+      id,
+    },
+  };
+  console.log('deleteParams', deleteParams);
+  const deleteItemResponse = await docClient.delete(deleteParams).promise();
+  console.log('deleteItemResponse', deleteItemResponse);
   const responseBody = {
-    data: updateItemResponse
+    data: {}
   }
+
   console.log('responseBody', responseBody);
   const response = {
     statusCode : 200,

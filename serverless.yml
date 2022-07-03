@@ -30,9 +30,11 @@ provider:
             - dynamodb:DeleteItem
           Resource:
             - !GetAtt EnvironmentTable.Arn
+            - !GetAtt FeatureTable.Arn
   environment:
     STAGE_NAME: ${param:stageName}
     ENVIRONMENT_TABLE: !Ref EnvironmentTable
+    FEATURE_TABLE: !Ref FeatureTable
 
 # Stage parameters
 params:
@@ -56,7 +58,7 @@ package:
 
 functions:
   getEnvironmentList:
-    handler: functions/api/getEnvironmentList.handler
+    handler: functions/api/environment/getEnvironmentList.handler
     package:
       patterns:
         - '**/getEnvironmentList.js'
@@ -70,7 +72,7 @@ functions:
               Ref: ApiGatewayAuthorizer
 
   getEnvironment:
-    handler: functions/api/getEnvironment.handler
+    handler: functions/api/environment/getEnvironment.handler
     package:
       patterns:
         - '**/getEnvironment.js'
@@ -84,7 +86,7 @@ functions:
               Ref: ApiGatewayAuthorizer
 
   createEnvironment:
-    handler: functions/api/createEnvironment.handler
+    handler: functions/api/environment/createEnvironment.handler
     package:
       patterns:
         - '**/createEnvironment.js'
@@ -98,7 +100,7 @@ functions:
               Ref: ApiGatewayAuthorizer
 
   updateEnvironment:
-    handler: functions/api/updateEnvironment.handler
+    handler: functions/api/environment/updateEnvironment.handler
     package:
       patterns:
         - '**/updateEnvironment.js'
@@ -112,7 +114,7 @@ functions:
               Ref: ApiGatewayAuthorizer
 
   deleteEnvironment:
-    handler: functions/api/deleteEnvironment.handler
+    handler: functions/api/environment/deleteEnvironment.handler
     package:
       patterns:
         - '**/deleteEnvironment.js'
@@ -125,9 +127,90 @@ functions:
             authorizerId:
               Ref: ApiGatewayAuthorizer
 
+  getFeatureList:
+    handler: functions/api/feature/getFeatureList.handler
+    package:
+      patterns:
+        - '**/getFeatureList.js'
+    events:
+      - http:
+          path: 'feature'
+          method: get
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
+
+  getFeature:
+    handler: functions/api/feature/getFeature.handler
+    package:
+      patterns:
+        - '**/getFeature.js'
+    events:
+      - http:
+          path: 'feature/{id}'
+          method: get
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
+
+  createFeature:
+    handler: functions/api/feature/createFeature.handler
+    package:
+      patterns:
+        - '**/createFeature.js'
+    events:
+      - http:
+          path: feature
+          method: post
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
+
+  updateFeature:
+    handler: functions/api/feature/updateFeature.handler
+    package:
+      patterns:
+        - '**/updateFeature.js'
+    events:
+      - http:
+          path: '/feature/{id}'
+          method: put
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
+
+  deleteFeature:
+    handler: functions/api/feature/deleteFeature.handler
+    package:
+      patterns:
+        - '**/deleteFeature.js'
+    events:
+      - http:
+          path: '/feature/{id}'
+          method: delete
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer            
+
 resources:
   Resources:
     EnvironmentTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+
+    FeatureTable:
       Type: AWS::DynamoDB::Table
       Properties:
         BillingMode: PAY_PER_REQUEST
