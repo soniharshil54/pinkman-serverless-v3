@@ -10,13 +10,13 @@ provider:
   apiGateway:
     apiKeys:
       - pinkman-${param:stageName}
-  httpApi:
-    authorizers:
-      cognitoAuthorizer:
-        identitySource: $request.header.Authorization
-        issuerUrl: https://cognito-idp.us-east-2.amazonaws.com/us-east-2_qlZbnPw7k
-        audience:
-          - "7fp48j4v198b8um8n2vpf5t7j7"
+  # httpApi:
+  #   authorizers:
+  #     cognitoAuthorizer:
+  #       identitySource: $request.header.Authorization
+  #       issuerUrl: https://cognito-idp.us-east-2.amazonaws.com/us-east-2_qlZbnPw7k
+  #       audience:
+  #         - "7fp48j4v198b8um8n2vpf5t7j7"
   iam:
     role:
       statements:
@@ -61,11 +61,13 @@ functions:
       patterns:
         - '**/getEnvironmentList.js'
     events:
-      - httpApi:
-          path: '/environment-list'
+      - http:
+          path: 'environment'
           method: get
           authorizer:
-            name: cognitoAuthorizer
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
 
   getEnvironment:
     handler: functions/api/getEnvironment.handler
@@ -74,9 +76,12 @@ functions:
         - '**/getEnvironment.js'
     events:
       - http:
-          path: '/environment/{id}'
+          path: 'environment/{id}'
           method: get
-          private: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
 
   createEnvironment:
     handler: functions/api/createEnvironment.handler
@@ -87,7 +92,10 @@ functions:
       - http:
           path: environment
           method: post
-          private: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
 
   updateEnvironment:
     handler: functions/api/updateEnvironment.handler
@@ -98,7 +106,10 @@ functions:
       - http:
           path: '/environment/{id}'
           method: put
-          private: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
 
   deleteEnvironment:
     handler: functions/api/deleteEnvironment.handler
@@ -109,7 +120,10 @@ functions:
       - http:
           path: '/environment/{id}'
           method: delete
-          private: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
 
 resources:
   Resources:
@@ -257,3 +271,22 @@ resources:
               S3OriginConfig:
                 OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}"
           PriceClass: "PriceClass_All"
+
+    ApiGatewayAuthorizer:
+      Type: AWS::ApiGateway::Authorizer
+      Properties:
+        Name: PinkmanApiAuthorizer
+        RestApiId:
+          Ref: ApiGatewayRestApi
+        Type: COGNITO_USER_POOLS
+        ProviderARNs:
+          - Fn::GetAtt: [ CognitoUserPool, Arn ]
+        IdentitySource: method.request.header.Authorization
+
+  Outputs:
+    userPoolId:
+      Value:
+        Ref: CognitoUserPool
+    webClientId:
+      Value:
+        Ref: WebClient
