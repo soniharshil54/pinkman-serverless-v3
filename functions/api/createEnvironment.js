@@ -2,11 +2,13 @@ const AWS = require('aws-sdk');
 const docClient = new AWS.DynamoDB.DocumentClient();
 const { ENVIRONMENT_TABLE } = process.env;
 
+const UtilService = require('../../services/util');
+
 module.exports.handler = async (event) => {
   console.log('event', event);
   const params = JSON.parse(event.body)
   console.log('params', params);
-
+  params.id = UtilService.generateUUID();
   const putItemParams = {
     Item: params,
     TableName: ENVIRONMENT_TABLE,
